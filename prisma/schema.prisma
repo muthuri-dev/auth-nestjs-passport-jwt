@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,50 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  fullname  String
-  bio       String?
-  image     String?
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  posts     Post[]
-  comments  Comment[]
-  likes     Like[]
-}
+  id            String   @id @default(cuid())
+  user_name     String   @unique
+  email         String?  @unique
+  password      String
+  refresh_token String?  @db.LongText
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-model Post {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  text      String
-  video     String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  comments  Comment[]
-  likes     Like[]
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  postId    String   @map("post_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  text      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-}
-
-model Like {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  postId    String   @map("post_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([userId, postId])
+  @@map("users")
 }
