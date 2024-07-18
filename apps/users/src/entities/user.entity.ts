@@ -11,8 +11,8 @@ export class User {
   @Field({ nullable: true })
   email?: string;
 
-  @Field()
-  password: string;
+  // @Field()
+  // password: string;
 
   @Field({ nullable: true })
   refresh_token?: string;

@@ -12,3 +12,9 @@ export class Auth {
   @Field()
   refresh_token: string;
 }
+
+@ObjectType()
+export class Logout {
+  @Field()
+  loggedout: string;
+}

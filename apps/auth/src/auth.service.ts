@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { PrismaService } from '@app/prisma';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-//import { LoginDto } from './dto/login.dto';
+import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Logout } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +46,37 @@ export class AuthService {
   }
 
   //login user service
-  async login() {}
+  async login(loginDto: LoginDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { user_name: loginDto.user_name },
+    });
+    if (!user)
+      throw new ForbiddenException('No account registered with the username');
+
+    //copmare passwords
+    const isPassMatch = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPassMatch) throw new ForbiddenException('Incorrect password');
+
+    //creating new token
+    const { access_token, refresh_token } = await this.generateTokens(
+      user.id,
+      user.user_name,
+    );
+
+    //update refresh token
+    await this.updateRefreshToken(user.id, refresh_token);
+
+    return await { access_token, refresh_token, user };
+  }
+
+  //user log out service
+  async logout(user_id: string): Promise<Logout> {
+    await this.prismaService.user.updateMany({
+      where: { id: user_id, refresh_token: { not: null } },
+      data: { refresh_token: null },
+    });
+    return await { loggedout: 'loggedout' };
+  }
 
   //generate tokens service
   async generateTokens(user_id: string, user_name: string) {
@@ -76,7 +111,7 @@ export class AuthService {
     const user = await this.prismaService.user.findUnique({
       where: { id: user_id },
     });
-    if (!user) throw new BadRequestException('User does not exist');
+    if (!user) throw new BadRequestException('User does not exist!');
 
     // hashing refresh token
     const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
