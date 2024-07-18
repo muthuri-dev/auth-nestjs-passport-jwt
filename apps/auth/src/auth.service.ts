@@ -25,29 +25,30 @@ export class AuthService {
     //hashing password
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
+    const user = await this.prismaService.user.create({
+      data: { ...registerDto, password: hashedPassword },
+    });
+
     //the tokens
     const { access_token, refresh_token } = await this.generateTokens(
-      registerDto.user_name,
-      registerDto.password,
+      user.id,
+      user.user_name,
     );
-    const user = await this.prismaService.user.create({
-      data: { ...registerDto, password: hashedPassword, refresh_token },
-    });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //const { password, ...user_without_password } = user;
 
-    return { access_token, refresh_token, user };
+    await this.updateRefreshToken(user.id, refresh_token);
+
+    return await { access_token, refresh_token, user };
   }
 
   //login user service
   async login() {}
 
   //generate tokens service
-  async generateTokens(user_name: string, password: string) {
+  async generateTokens(user_id: string, user_name: string) {
     const access_token = await this.jwtService.sign(
       {
         user_name,
-        password,
+        user_id,
       },
       {
         secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
@@ -59,16 +60,30 @@ export class AuthService {
       {
         access_token,
         user_name,
-        password,
+        user_id,
       },
       {
         secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
         expiresIn: '7d',
       },
     );
-    return { access_token, refresh_token };
+    return await { access_token, refresh_token };
   }
 
   //update the refresh token in the database
-  async updateRefreshToken() {}
+  async updateRefreshToken(user_id: string, refresh_token: string) {
+    //checking if user exists
+    const user = await this.prismaService.user.findUnique({
+      where: { id: user_id },
+    });
+    if (!user) throw new BadRequestException('User does not exist');
+
+    // hashing refresh token
+    const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
+
+    await this.prismaService.user.update({
+      where: { id: user_id },
+      data: { refresh_token: hashedRefreshToken },
+    });
+  }
 }

@@ -14,6 +14,9 @@ export class User {
   @Field()
   password: string;
 
+  @Field({ nullable: true })
+  refresh_token?: string;
+
   @Field()
   created_at: Date;
 
