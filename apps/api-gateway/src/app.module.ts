@@ -9,7 +9,10 @@ import { GraphQLModule } from '@nestjs/graphql';
       driver: ApolloGatewayDriver,
       gateway: {
         supergraphSdl: new IntrospectAndCompose({
-          subgraphs: [],
+          subgraphs: [
+            { name: 'Auth', url: 'http://localhost:3002/graphql' },
+            { name: 'Users', url: 'http://localhost:3001/graphql' },
+          ],
         }),
       },
     }),
