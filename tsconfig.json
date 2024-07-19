@@ -23,6 +23,44 @@
       ],
       "@app/prisma/*": [
         "libs/prisma/src/*"
+      ],
+      "@app/decorators/public": [
+        "libs/decorators/public/src"
+      ],
+      "@app/decorators/public/*": [
+        "libs/decorators/public/src/*"
+      ],
+      "@app/public": [
+        "libs/public/src",
+        "libs/public/src"
+      ],
+      "@app/public/*": [
+        "libs/public/src/*",
+        "libs/public/src/*"
+      ],
+      "@app/public-decorator": [
+        "libs/public-decorator/src"
+      ],
+      "@app/public-decorator/*": [
+        "libs/public-decorator/src/*"
+      ],
+      "@app/decorators": [
+        "libs/decorators/src"
+      ],
+      "@app/decorators/*": [
+        "libs/decorators/src/*"
+      ],
+      "@app/guards": [
+        "libs/guards/src"
+      ],
+      "@app/guards/*": [
+        "libs/guards/src/*"
+      ],
+      "@app/strategies": [
+        "libs/strategies/src"
+      ],
+      "@app/strategies/*": [
+        "libs/strategies/src/*"
       ]
     }
   }

@@ -23,9 +23,19 @@ type Logout {
 }
 
 type Mutation {
+  getNewTokens: NewToken!
   loginUser(loginDto: LoginDto!): Auth!
   logout(user_id: String!): Logout!
   registerUser(registerDto: RegisterDto!): Auth!
+}
+
+type NewToken {
+  access_token: String!
+  refresh_token: String!
+}
+
+type Query {
+  test: String!
 }
 
 input RegisterDto {

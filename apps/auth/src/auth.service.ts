@@ -75,7 +75,34 @@ export class AuthService {
       where: { id: user_id, refresh_token: { not: null } },
       data: { refresh_token: null },
     });
-    return await { loggedout: 'loggedout' };
+    return await { loggedout: 'loggedout successfully' };
+  }
+
+  //generating new tokens after expiry
+  async getNewTokens(user_id: string, rt: string) {
+    //checking if user exists
+    const user = await this.prismaService.user.findUnique({
+      where: { id: user_id },
+    });
+    if (!user)
+      throw new BadRequestException('Access Denied user does not exist!!');
+
+    //checking if refresh tokens match with the one in the database
+    const isRefreshTokenMatch = await bcrypt.compare(rt, user.refresh_token);
+
+    if (!isRefreshTokenMatch)
+      throw new ForbiddenException('Access Denied invalid token provided !!');
+
+    //creating new token if token is correct
+    const { access_token, refresh_token } = await this.generateTokens(
+      user.id,
+      user.user_name,
+    );
+
+    //update refresh_token
+    await this.updateRefreshToken(user.id, refresh_token);
+
+    return await { access_token, refresh_token, user };
   }
 
   //generate tokens service

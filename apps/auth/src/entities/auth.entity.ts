@@ -18,3 +18,12 @@ export class Logout {
   @Field()
   loggedout: string;
 }
+
+@ObjectType()
+export class NewToken {
+  @Field()
+  access_token: string;
+
+  @Field()
+  refresh_token: string;
+}

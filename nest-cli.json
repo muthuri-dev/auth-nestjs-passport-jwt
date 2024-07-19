@@ -45,6 +45,33 @@
       "compilerOptions": {
         "tsConfigPath": "libs/prisma/tsconfig.lib.json"
       }
+    },
+    "decorators": {
+      "type": "library",
+      "root": "libs/decorators",
+      "entryFile": "index",
+      "sourceRoot": "libs/decorators/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/decorators/tsconfig.lib.json"
+      }
+    },
+    "guards": {
+      "type": "library",
+      "root": "libs/guards",
+      "entryFile": "index",
+      "sourceRoot": "libs/guards/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/guards/tsconfig.lib.json"
+      }
+    },
+    "strategies": {
+      "type": "library",
+      "root": "libs/strategies",
+      "entryFile": "index",
+      "sourceRoot": "libs/strategies/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/strategies/tsconfig.lib.json"
+      }
     }
   }
 }

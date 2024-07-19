@@ -10,6 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { PrismaService } from '@app/prisma';
 import { JwtService } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from '@app/guards';
+import { AccessTokenStrategy, RefreshTokenStrategy } from '@app/strategies';
 
 @Module({
   imports: [
@@ -21,6 +24,7 @@ import { JwtService } from '@nestjs/jwt';
         path: join(process.cwd(), 'apps/auth/src/schema.gql'),
       },
       driver: ApolloFederationDriver,
+      context: ({ req }) => ({ req }),
     }),
   ],
   providers: [
@@ -29,6 +33,9 @@ import { JwtService } from '@nestjs/jwt';
     ConfigService,
     PrismaService,
     JwtService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
   ],
 })
 export class AuthModule {}
